@@ -63,7 +63,7 @@ func isCommand(comnd string) {
 		if exist {
 			fmt.Printf("%s is %s\n", comnd, path)
 		} else {
-			fmt.Println(comnd, ": not found")
+			fmt.Println(comnd + ": not found")
 		}
 
 	}
