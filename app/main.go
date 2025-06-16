@@ -25,23 +25,22 @@ func main() {
 		}
 
 		trimmedCommand := command[:len(command)-1]
-		if trimmedCommand == "exit 0" {
-			os.Exit(0)
+
+		args := strings.Split(trimmedCommand, " ")
+		
+		switch args[0] {
+			case "exit" :
+			if len(args) == 2 && args[1] == "0" {
+				os.Exit(0)
+			} 
+			case "echo" :
+				fmt.Println(strings.Join(args[1:], " "))
+		
+			default:
+				fmt.Println(args[0] + ": command not found")
 		}
 
-		com := strings.Split(trimmedCommand, " ")
 
-		if com[0] == "echo" {
-			for _,v := range com[1:] {
-				fmt.Print(v, " ")
-			}
-			fmt.Println()
-			continue
-		}
-
-
-		//Since the string returned by ReadString('\n') includes a trailing newline, use command[:len(command)-1] to remove it.
-		fmt.Println(trimmedCommand + ": command not found")
 	}
 
 }
