@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
 )
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
@@ -22,10 +23,14 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(command[:len(command)-1] + ": command not found")
+
+		trimmedCommand := command[:len(command)-1]
+		if trimmedCommand == "exit" {
+			return
+		}
 
 		//Since the string returned by ReadString('\n') includes a trailing newline, use command[:len(command)-1] to remove it.
-
+		fmt.Println(trimmedCommand + ": command not found")
 	}
 
 }
