@@ -25,8 +25,8 @@ func main() {
 		}
 
 		trimmedCommand := command[:len(command)-1]
-		if trimmedCommand == "exit" {
-			return
+		if trimmedCommand == "exit 0" {
+			os.Exit(0)
 		}
 
 		//Since the string returned by ReadString('\n') includes a trailing newline, use command[:len(command)-1] to remove it.
