@@ -9,7 +9,7 @@ import (
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Fprint
-var Builtin = []string{"echo","exit"}
+var Builtin = []string{"echo","exit", "type"}
 func main() {
 
 	
