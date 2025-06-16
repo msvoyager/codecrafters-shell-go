@@ -9,16 +9,23 @@ import (
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Fprint
-var Builtin = []string{"echo","exit", "type"}
+var Builtin = map[string]bool{
+	"echo": true,
+	"exit": true,
+	"type": true,
+	
+}
 func main() {
 
 	
-	for i := 1; i > 0; i++ {
+	for  {
 		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
 
 		// Wait for user input
 		command, err := bufio.NewReader(os.Stdin).ReadString('\n')
+
+		
 
 		if err != nil {
 			panic(err)
@@ -37,12 +44,7 @@ func main() {
 				fmt.Println(strings.Join(args[1:], " "))
 		
 			case "type" :
-				out := isBuiltIn(args)
-				if out {
-					fmt.Println(args[1], "is a shell builtin")
-				} else {
-					fmt.Println(args[1] + ": not found")
-				}
+				isCommand(args[1])
 				
 
 			default:
@@ -53,16 +55,32 @@ func main() {
 	}
 
 }
-
-func isBuiltIn(args []string) bool{
-	for _,v := range Builtin {
-		if len(args) == 2 && v == args[1] {
-			
-			return true
+func isCommand(comnd string) {
+	if Builtin[comnd] {
+		fmt.Println(comnd, "is a shell builtin")
+	} else{
+		path, exist:= findPath(comnd)
+		if exist {
+			fmt.Printf("%s is %s\n", comnd, path)
+		} else {
+			fmt.Println(comnd, ": not found")
 		}
-						
-				
+
+	}
+}
+
+
+func findPath(cmd string) (string, bool) {
+	pathEnv := os.Getenv("PATH")
+	for _,dir := range strings.Split(pathEnv, ":") {
+		fullPath := dir + "/" + cmd
+		_, err := os.Stat(fullPath)
+		if err == nil {
+			return fullPath,true
+		}
+
+		
 	}
 
-	return false
+	return "",false
 }
