@@ -9,10 +9,10 @@ import (
 
 // Ensures gofmt doesn't remove the "fmt" import in stage 1 (feel free to remove this!)
 var _ = fmt.Fprint
-
+var Builtin = []string{"echo","exit"}
 func main() {
 
-	builtin := []string{"echo","exit"}
+	
 	for i := 1; i > 0; i++ {
 		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
@@ -37,11 +37,14 @@ func main() {
 				fmt.Println(strings.Join(args[1:], " "))
 		
 			case "type" :
-				for _,isbuitlin := range builtin {
-					if len(args) == 2 && isbuitlin == args[1] {
-						fmt.Println(args[1], "is a shell builtin")
-					}
+				out := isBuiltIn(args)
+				if out {
+					fmt.Println(args[1], "is a shell builtin")
+				} else {
+					fmt.Println(args[1] + ": command not found")
 				}
+				
+
 			default:
 				fmt.Println(args[0] + ": command not found")
 		}
@@ -49,4 +52,17 @@ func main() {
 
 	}
 
+}
+
+func isBuiltIn(args []string) bool{
+	for _,v := range Builtin {
+		if len(args) == 2 && v == args[1] {
+			
+			return true
+		}
+						
+				
+	}
+
+	return false
 }
