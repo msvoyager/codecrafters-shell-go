@@ -12,7 +12,7 @@ var _ = fmt.Fprint
 
 func main() {
 
-
+	builtin := []string{"echo","exit"}
 	for i := 1; i > 0; i++ {
 		// Uncomment this block to pass the first stage
 		fmt.Fprint(os.Stdout, "$ ")
@@ -36,6 +36,12 @@ func main() {
 			case "echo" :
 				fmt.Println(strings.Join(args[1:], " "))
 		
+			case "type" :
+				for _,isbuitlin := range builtin {
+					if len(args) == 2 && isbuitlin == args[1] {
+						fmt.Println(args[1], "is a shell builtin")
+					}
+				}
 			default:
 				fmt.Println(args[0] + ": command not found")
 		}
