@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -34,8 +35,8 @@ func main() {
 		trimmedCommand := command[:len(command)-1]
 
 		args := strings.Split(trimmedCommand, " ")
-		
-		switch args[0] {
+		if len(args) > 1 {
+			switch args[0] {
 			case "exit" :
 			if len(args) == 2 && args[1] == "0" {
 				os.Exit(0)
@@ -48,7 +49,18 @@ func main() {
 				
 
 			default:
-				fmt.Println(args[0] + ": command not found")
+				cmd := exec.Command(args[0], args[1:]...)
+				cmd.Stdout = os.Stdout
+				cmd.Stderr = os.Stderr
+				cmd.Stdin = os.Stdin
+				
+				err := cmd.Run()
+				if err != nil {
+					fmt.Println(args[0] + ": command not found")
+				}
+			}
+		} else if len(args) == 1 {
+			fmt.Println(args[0] + ": command not found")
 		}
 
 
@@ -59,7 +71,7 @@ func isCommand(comnd string) {
 	if Builtin[comnd] {
 		fmt.Println(comnd, "is a shell builtin")
 	} else{
-		path, exist:= findPath(comnd)
+		path,exist:= findPath(comnd, )
 		if exist {
 			fmt.Printf("%s is %s\n", comnd, path)
 		} else {
@@ -74,13 +86,36 @@ func findPath(cmd string) (string, bool) {
 	pathEnv := os.Getenv("PATH")
 	for _,dir := range strings.Split(pathEnv, ":") {
 		fullPath := dir + "/" + cmd
-		_, err := os.Stat(fullPath)
+		_,err := os.Stat(fullPath)
 		if err == nil {
-			return fullPath,true
+			return fullPath, true
 		}
+	// 	if isExecutable(fullPath) {
+	// 		cmd := exec.Command(args[0], args[1:]...)
+	// 		cmd.Stdout = os.Stdout
+	// 		cmd.Stderr = os.Stderr
+	// 		cmd.Stdin = os.Stdin
+
+	// 		err := cmd.Run()
+	// 		if err != nil {
+	// 			fmt.Printf("%s: command not found\n", args[0])
+	// }
+	// 	} else {
+	// 		return fullPath,true
+	// 	}
+		
 
 		
 	}
 
 	return "",false
 }
+
+// func isExecutable(file string) bool {
+// 	info, err := os.Stat(file)
+// 	if err != nil {
+// 		return false
+// 	}
+// 	return !info.IsDir() && info.Mode()&0111 != 0
+
+// }
