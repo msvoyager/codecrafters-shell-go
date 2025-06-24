@@ -15,6 +15,7 @@ var Builtin = map[string]bool{
 	"exit": true,
 	"type": true,
 	"pwd" : true,
+	
 }
 func main() {
 
@@ -60,6 +61,7 @@ func main() {
 
 			case "cd" :
 				cd(args[1])
+				
 			default:
 
 				_,executable := isExe(args[0])
@@ -120,16 +122,17 @@ func isExe(cmd string) (string, bool) {
 func cd(dir string) {
 	//dir ''
 	//dir 'wrong address'
-	if dir != "" {
-		info,err := os.Stat(dir)
+	chdir := pathBuild(dir)
+	if chdir != "" {
+		info,err := os.Stat(chdir)
 		if err != nil {
 			if os.IsNotExist(err) {
-				fmt.Printf("cd: %s: No such file or directory\n", dir)
+				fmt.Printf("cd: %s: No such file or directory\n", chdir)
 			} else {
 				fmt.Println("Error accessing path:", err)
 			}
 		} else if info.IsDir() {
-			err = os.Chdir(dir)
+			err = os.Chdir(chdir)
 			check(err)
 		}
 	}
@@ -137,8 +140,56 @@ func cd(dir string) {
 
 }
 
+func pathBuild(uInput string) string{
+	// ../ == move back once
+	// ./dir == open a folder inside the current folder
+	var finalPath string
+	if len(uInput) > 0 {
+		userParts := strings.FieldsFunc(uInput, func(r rune) bool {
+			return  r == '/'
+		})
 
-	
+		dir, _ := os.Getwd()
+		dirParts := strings.FieldsFunc(dir, func(r rune) bool {
+			return  r == '/'
+		})
+		if string(uInput[0]) == "/" {
+			//return the uinput as the final path   /usr/bin
+			
+			return uInput
+			
+		} else if userParts[0] == "." || userParts[0] == ".."{
+			//getwd() + uinput modified
+			// ./bin getwd()=> /usr + /bin[check from the last value until . show up and remove it ]
+
+			for _,value := range userParts{
+				switch value {
+				case ".":
+					continue
+				case "..":
+					getParentPath(&dirParts)
+				default:
+					dirParts = append(dirParts, value)
+				}
+			}
+
+		}else {
+
+		}
+
+		finalPath = "/" + strings.Join(dirParts, "/")
+		
+		
+	}else {
+		return ""
+	}
+	return  finalPath
+}
+
+func getParentPath(path *[]string) {
+	*path = (*path)[:len(*path)-1]
+}
+
 func check(e error) {
     if e != nil {
         panic(e)
