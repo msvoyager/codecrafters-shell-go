@@ -158,7 +158,7 @@ func pathBuild(uInput string) string{
 			
 			return uInput
 			
-		} else if userParts[0] == "." || userParts[0] == ".."{
+		} else{
 			//getwd() + uinput modified
 			// ./bin getwd()=> /usr + /bin[check from the last value until . show up and remove it ]
 
@@ -168,12 +168,15 @@ func pathBuild(uInput string) string{
 					continue
 				case "..":
 					getParentPath(&dirParts)
+				case "~":
+					homeDir := os.Getenv("HOME")
+					dirParts = nil
+					dirParts = append(dirParts, homeDir)
+
 				default:
 					dirParts = append(dirParts, value)
 				}
 			}
-
-		}else {
 
 		}
 
@@ -189,6 +192,8 @@ func pathBuild(uInput string) string{
 func getParentPath(path *[]string) {
 	*path = (*path)[:len(*path)-1]
 }
+
+
 
 func check(e error) {
     if e != nil {
